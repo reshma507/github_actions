@@ -1,9 +1,29 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      # pin to a stable major version you tested with; adjust if needed:
+      version = "~> 4.0"
+    }
+  }
+  required_version = ">= 1.4.0"
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
+# Default VPC
 data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnet_ids" "default" {
-  vpc_id = data.aws_vpc.default.id
+# Subnets in the default VPC (replacement for deprecated aws_subnet_ids)
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
 }
 
 resource "aws_security_group" "strapi_sg" {
@@ -12,30 +32,30 @@ resource "aws_security_group" "strapi_sg" {
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 1337
-    to_port   = 1337
-    protocol  = "tcp"
+    from_port   = 1337
+    to_port     = 1337
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -51,14 +71,12 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "strapi" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
-
-  subnet_id              = data.aws_subnet_ids.default.ids[0]
-  vpc_security_group_ids = [aws_security_group.strapi_sg.id]
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = "t3.micro"
+  subnet_id                   = data.aws_subnets.default.ids[0]
+  vpc_security_group_ids      = [aws_security_group.strapi_sg.id]
   associate_public_ip_address = true
 
-  # USE YOUR EXISTING KEY
   key_name = "strapi-key"
 
   user_data = templatefile("${path.module}/cloud-init.tpl", {
