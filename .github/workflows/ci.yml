@@ -5,11 +5,14 @@ on:
     branches: [ "main" ]
 
 env:
-  IMAGE_NAME: reshma561/strapi-app   # <-- replace with your DockerHub repo
+  IMAGE_NAME: reshma561/strapi-app
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    outputs:
+      image_tag: ${{ steps.tag.outputs.tag }}
 
     steps:
       - name: Checkout
@@ -40,3 +43,6 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
             ${{ env.IMAGE_NAME }}:latest
+
+      - name: Show Image Tag
+        run: echo "IMAGE TAG = ${{ steps.tag.outputs.tag }}"
