@@ -85,7 +85,9 @@ resource "aws_instance" "strapi" {
   api_token_salt       = var.api_token_salt
   transfer_token_salt  = var.transfer_token_salt
   encryption_key       = var.encryption_key
-  
+  app_keys             = var.app_keys
+  admin_auth_secret    = var.admin_auth_secret
+
   })
 
   tags = {

@@ -21,7 +21,10 @@ docker run -d --name strapi \
   -e API_TOKEN_SALT="${api_token_salt}" \
   -e TRANSFER_TOKEN_SALT="${transfer_token_salt}" \
   -e ENCRYPTION_KEY="${encryption_key}" \
+  -e APP_KEYS="${app_keys}" \
+  -e ADMIN_AUTH_SECRET="${admin_auth_Secret}" \
   -e DATABASE_CLIENT=sqlite \
   -e DATABASE_FILENAME=.tmp/data.db \
   ${image}
+
 
