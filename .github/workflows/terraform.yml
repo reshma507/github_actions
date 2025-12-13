@@ -18,19 +18,21 @@ on:
         required: true
         default: "eu-north-1"
         type: string
+
       action:
-       description: "Terraform action"
-       required: true
-       default: "apply"
-       type: choice
-       options:
-        - apply
-        - destroy
+        description: "Terraform action"
+        required: true
+        default: "apply"
+        type: choice
+        options:
+          - apply
+          - destroy
+
 jobs:
-  terraform: 
+  terraform:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-   
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -46,7 +48,6 @@ jobs:
         aws-region: ${{ github.event.inputs.aws_region }}
 
     - name: Set Terraform variables
-      if: github.event.inputs.action == 'apply'
       run: |
         echo "TF_VAR_image=${{ github.event.inputs.image_repo }}:${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
         echo "TF_VAR_aws_region=${{ github.event.inputs.aws_region }}" >> $GITHUB_ENV
@@ -69,6 +70,79 @@ jobs:
       if: github.event.inputs.action == 'destroy'
       working-directory: infra
       run: terraform destroy -auto-approve
+
+
+# name: CD - Deploy Strapi with Terraform
+
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       image_repo:
+#         description: "Docker image repository (ex: reshma561/strapi-app)"
+#         required: true
+#         type: string
+
+#       image_tag:
+#         description: "Image tag generated from CI workflow"
+#         required: true
+#         type: string
+
+#       aws_region:
+#         description: "AWS region for deployment"
+#         required: true
+#         default: "eu-north-1"
+#         type: string
+#       action:
+#        description: "Terraform action"
+#        required: true
+#        default: "apply"
+#        type: choice
+#        options:
+#         - apply
+#         - destroy
+# jobs:
+#   terraform: 
+#     if: github.event_name == 'workflow_dispatch'
+#     runs-on: ubuntu-latest
+   
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v4
+
+#     - name: Setup Terraform
+#       uses: hashicorp/setup-terraform@v2
+
+#     - name: Configure AWS Credentials
+#       uses: aws-actions/configure-aws-credentials@v2
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: ${{ github.event.inputs.aws_region }}
+
+#     - name: Set Terraform variables
+#       if: github.event.inputs.action == 'apply'
+#       run: |
+#         echo "TF_VAR_image=${{ github.event.inputs.image_repo }}:${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
+#         echo "TF_VAR_aws_region=${{ github.event.inputs.aws_region }}" >> $GITHUB_ENV
+
+#     - name: Terraform Init
+#       working-directory: infra
+#       run: terraform init -upgrade
+
+#     - name: Terraform Plan
+#       if: github.event.inputs.action == 'apply'
+#       working-directory: infra
+#       run: terraform plan -no-color
+
+#     - name: Terraform Apply
+#       if: github.event.inputs.action == 'apply'
+#       working-directory: infra
+#       run: terraform apply -auto-approve
+
+#     - name: Terraform Destroy
+#       if: github.event.inputs.action == 'destroy'
+#       working-directory: infra
+#       run: terraform destroy -auto-approve
 
 # jobs:
 #   deploy:
