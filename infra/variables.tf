@@ -29,10 +29,7 @@ variable "app_keys" {
   type      = string
   sensitive = true
 }
-variable "encryption_key"{
-  type     = string
-  sensitive = true
-}
+
 variable "admin_auth_secret"{
   type     = string
   sensitive = true
