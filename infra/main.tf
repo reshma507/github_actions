@@ -80,7 +80,12 @@ resource "aws_instance" "strapi" {
   key_name = "strapi-key"
 
   user_data = templatefile("${path.module}/cloud-init.tpl", {
-    image = var.image
+  image                = var.image
+  admin_jwt_secret     = var.admin_jwt_secret
+  api_token_salt       = var.api_token_salt
+  transfer_token_salt  = var.transfer_token_salt
+  encryption_key       = var.encryption_key
+  
   })
 
   tags = {

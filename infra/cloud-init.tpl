@@ -16,4 +16,9 @@ docker run -d --name strapi \
   -p 1337:1337 \
   -p 80:80 \
   --restart unless-stopped \
+  -e NODE_ENV=production \
+  -e ADMIN_JWT_SECRET="${admin_jwt_secret}" \
+  -e API_TOKEN_SALT="${api_token_salt}" \
+  -e TRANSFER_TOKEN_SALT="${transfer_token_salt}" \
+  -e ENCRYPTION_KEY="${encryption_key}" \
   ${image}

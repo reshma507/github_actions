@@ -6,3 +6,22 @@ variable "aws_region" {
 variable "image" {
   type = string
 }
+variable "admin_jwt_secret" {
+  type      = string
+  sensitive = true
+}
+
+variable "api_token_salt" {
+  type      = string
+  sensitive = true
+}
+
+variable "transfer_token_salt" {
+  type      = string
+  sensitive = true
+}
+
+variable "encryption_key" {
+  type      = string
+  sensitive = true
+}
