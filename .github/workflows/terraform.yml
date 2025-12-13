@@ -18,45 +18,96 @@ on:
         required: true
         default: "eu-north-1"
         type: string
-
+      action:
+       description: "Terraform action"
+       required: true
+       default: "apply"
+       type: choice
+       options:
+        - apply
+        - destroy
 jobs:
-  deploy:
+  terraform: 
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-
+   
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ github.event.inputs.aws_region }}
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ github.event.inputs.aws_region }}
 
-      - name: Set TF variables from workflow inputs
-        run: |
-          echo "TF_VAR_image=${{ github.event.inputs.image_repo }}:${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
-          echo "TF_VAR_aws_region=${{ github.event.inputs.aws_region }}" >> $GITHUB_ENV
+    - name: Set Terraform variables
+      if: github.event.inputs.action == 'apply'
+      run: |
+        echo "TF_VAR_image=${{ github.event.inputs.image_repo }}:${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
+        echo "TF_VAR_aws_region=${{ github.event.inputs.aws_region }}" >> $GITHUB_ENV
 
-      - name: Terraform Init
-        working-directory: infra
-        run: terraform init -upgrade
+    - name: Terraform Init
+      working-directory: infra
+      run: terraform init -upgrade
 
-      - name: Terraform Plan
-        working-directory: infra
-        run: terraform plan -no-color
+    - name: Terraform Plan
+      if: github.event.inputs.action == 'apply'
+      working-directory: infra
+      run: terraform plan -no-color
 
-      - name: Terraform Apply
-        working-directory: infra
-        run: terraform apply -auto-approve
+    - name: Terraform Apply
+      if: github.event.inputs.action == 'apply'
+      working-directory: infra
+      run: terraform apply -auto-approve
 
-      - name: Show Public IP Output (from Terraform)
-        working-directory: infra
-        run: terraform output public_ip
+    - name: Terraform Destroy
+      if: github.event.inputs.action == 'destroy'
+      working-directory: infra
+      run: terraform destroy -auto-approve
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v2
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ${{ github.event.inputs.aws_region }}
+
+#       - name: Set TF variables from workflow inputs
+#         run: |
+#           echo "TF_VAR_image=${{ github.event.inputs.image_repo }}:${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
+#           echo "TF_VAR_aws_region=${{ github.event.inputs.aws_region }}" >> $GITHUB_ENV
+
+#       - name: Terraform Init
+#         working-directory: infra
+#         run: terraform init -upgrade
+
+#       - name: Terraform Plan
+#         working-directory: infra
+#         run: terraform plan -no-color
+
+#       - name: Terraform Apply
+#         working-directory: infra
+#         run: terraform apply -auto-approve
+
+#       - name: Show Public IP Output (from Terraform)
+#         working-directory: infra
+#         run: terraform output public_ip
 
 # name: CD - Deploy Strapi with Terraform
 
