@@ -20,7 +20,6 @@ resource "aws_db_instance" "strapi" {
   db_subnet_group_name   = aws_db_subnet_group.strapi.name
 }
 
-
 # resource "aws_db_instance" "strapi" {
 #   identifier             = "strapi-postgres"
 #   engine                 = "postgres"
