@@ -46,11 +46,11 @@ resource "aws_security_group" "rds_sg_reshma" {
   vpc_id = data.aws_vpc.default.id
 
   ingress {
-   description = "Postgres from EC2 SG"
+    description     = "Postgres from EC2 SG"
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.ec2_sg_reshma]
+    security_groups = [aws_security_group.ec2_sg_reshma.id]
   }
 
   egress {
@@ -76,7 +76,7 @@ resource "aws_db_instance" "postgres" {
   username                = var.db_username
   password                = var.db_password
   db_subnet_group_name    = aws_db_subnet_group.default.name
-  vpc_security_group_ids  = [aws_security_group.rds_sg.id]
+  vpc_security_group_ids  = [aws_security_group.rds_sg_reshma.id]
   publicly_accessible     = false
   skip_final_snapshot     = true
 }
@@ -92,12 +92,12 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-resource "aws_instance" "strapi-reshma" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.ec2_instance_type
-  subnet_id              = element(data.aws_subnets.default.ids, 0)
-  vpc_security_group_ids = [aws_security_group.ec2_sg_reshma]
-  key_name               = var.key_name
+resource "aws_instance" "strapi_reshma" {
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.ec2_instance_type
+  subnet_id                   = element(data.aws_subnets.default.ids, 0)
+  vpc_security_group_ids      = [aws_security_group.ec2_sg_reshma.id]
+  key_name                    = var.key_name
   associate_public_ip_address = true
 
   user_data = <<-EOF
@@ -132,12 +132,153 @@ resource "aws_instance" "strapi-reshma" {
 
 # ---------------- OUTPUTS ----------------
 output "strapi_url" {
-  value = "http://${aws_instance.strapi.public_ip}:1337"
+  value = "http://${aws_instance.strapi_reshma.public_ip}:1337"
 }
 
 output "rds_endpoint" {
   value = aws_db_instance.postgres.address
 }
+
+# provider "aws" {
+#   region = var.aws_region
+# }
+
+# # ---------------- NETWORK ----------------
+# data "aws_vpc" "default" {
+#   default = true
+# }
+
+# data "aws_subnets" "default" {
+#   filter {
+#     name   = "vpc-id"
+#     values = [data.aws_vpc.default.id]
+#   }
+# }
+
+# # ---------------- SECURITY GROUPS ----------------
+# resource "aws_security_group" "ec2_sg_reshma" {
+#   name   = "strapi-ec2-sg-reshma"
+#   vpc_id = data.aws_vpc.default.id
+
+#   ingress {
+#     from_port   = 22
+#     to_port     = 22
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+
+#   ingress {
+#     from_port   = 1337
+#     to_port     = 1337
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
+
+# resource "aws_security_group" "rds_sg_reshma" {
+#   name   = "strapi-rds-sg-reshma"
+#   vpc_id = data.aws_vpc.default.id
+
+#   ingress {
+#    description = "Postgres from EC2 SG"
+#     from_port       = 5432
+#     to_port         = 5432
+#     protocol        = "tcp"
+#     security_groups = [aws_security_group.ec2_sg_reshma]
+#   }
+
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
+
+# # ---------------- RDS ----------------
+# resource "aws_db_subnet_group" "default" {
+#   name       = "strapi-db-subnet-reshma"
+#   subnet_ids = data.aws_subnets.default.ids
+# }
+
+# resource "aws_db_instance" "postgres" {
+#   identifier              = "strapi-postgres"
+#   engine                  = "postgres"
+#   instance_class          = "db.t3.micro"
+#   allocated_storage       = var.db_allocated_storage
+#   db_name                 = var.db_name
+#   username                = var.db_username
+#   password                = var.db_password
+#   db_subnet_group_name    = aws_db_subnet_group.default.name
+#   vpc_security_group_ids  = [aws_security_group.rds_sg.id]
+#   publicly_accessible     = false
+#   skip_final_snapshot     = true
+# }
+
+# # ---------------- EC2 ----------------
+# data "aws_ami" "ubuntu" {
+#   most_recent = true
+#   owners      = ["099720109477"]
+
+#   filter {
+#     name   = "name"
+#     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+#   }
+# }
+
+# resource "aws_instance" "strapi-reshma" {
+#   ami                    = data.aws_ami.ubuntu.id
+#   instance_type          = var.ec2_instance_type
+#   subnet_id              = element(data.aws_subnets.default.ids, 0)
+#   vpc_security_group_ids = [aws_security_group.ec2_sg_reshma]
+#   key_name               = var.key_name
+#   associate_public_ip_address = true
+
+#   user_data = <<-EOF
+#     #!/bin/bash
+#     set -e
+
+#     apt-get update -y
+#     apt-get install -y docker.io
+#     systemctl enable --now docker
+#     sleep 10
+
+#     docker rm -f strapi || true
+
+#     docker run -d --restart unless-stopped \
+#       --name strapi \
+#       -p 1337:1337 \
+#       -e HOST=0.0.0.0 \
+#       -e PORT=1337 \
+#       -e DATABASE_CLIENT=postgres \
+#       -e DATABASE_HOST=${aws_db_instance.postgres.address} \
+#       -e DATABASE_PORT=5432 \
+#       -e DATABASE_NAME=${var.db_name} \
+#       -e DATABASE_USERNAME=${var.db_username} \
+#       -e DATABASE_PASSWORD=${var.db_password} \
+#       -e DATABASE_SSL=true \
+#       -e DATABASE_SSL_REJECT_UNAUTHORIZED=false \
+#       ${var.dockerhub_username}/${var.image_name}:${var.image_tag}
+#   EOF
+
+#   depends_on = [aws_db_instance.postgres]
+# }
+
+# # ---------------- OUTPUTS ----------------
+# output "strapi_url" {
+#   value = "http://${aws_instance.strapi.public_ip}:1337"
+# }
+
+# output "rds_endpoint" {
+#   value = aws_db_instance.postgres.address
+# }
 
 # provider "aws" {
 #   region = var.aws_region
