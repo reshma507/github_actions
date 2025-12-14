@@ -20,6 +20,9 @@ jobs:
         run: |
           TAG=${GITHUB_SHA::7}
           echo "tag=$TAG" >> $GITHUB_OUTPUT
+      - name: Show image tag
+        run: |
+         echo "Docker image tag: ${{ steps.meta.outputs.tag }}"
 
       - name: Login to Docker Hub
         run: |

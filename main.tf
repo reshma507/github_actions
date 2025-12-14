@@ -15,8 +15,8 @@ data "aws_subnets" "default" {
 }
 
 # ---------------- SECURITY GROUPS ----------------
-resource "aws_security_group" "ec2_sg" {
-  name   = "strapi-ec2-sg"
+resource "aws_security_group" "ec2_sg_reshma" {
+  name   = "strapi-ec2-sg-reshma"
   vpc_id = data.aws_vpc.default.id
 
   ingress {
@@ -41,16 +41,16 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-resource "aws_security_group" "rds_sg" {
-  name   = "strapi-rds-sg"
+resource "aws_security_group" "rds_sg_reshma" {
+  name   = "strapi-rds-sg-reshma"
   vpc_id = data.aws_vpc.default.id
 
   ingress {
-   .item_description = "Postgres from EC2 SG"
+   description = "Postgres from EC2 SG"
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.ec2_sg.id]
+    security_groups = [aws_security_group.ec2_sg_reshma]
   }
 
   egress {
@@ -63,7 +63,7 @@ resource "aws_security_group" "rds_sg" {
 
 # ---------------- RDS ----------------
 resource "aws_db_subnet_group" "default" {
-  name       = "strapi-db-subnet"
+  name       = "strapi-db-subnet-reshma"
   subnet_ids = data.aws_subnets.default.ids
 }
 
@@ -92,11 +92,11 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-resource "aws_instance" "strapi" {
+resource "aws_instance" "strapi-reshma" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.ec2_instance_type
   subnet_id              = element(data.aws_subnets.default.ids, 0)
-  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+  vpc_security_group_ids = [aws_security_group.ec2_sg_reshma]
   key_name               = var.key_name
   associate_public_ip_address = true
 
