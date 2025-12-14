@@ -13,6 +13,9 @@ variable "key_name" {
 variable "dockerhub_username" {
   type = string
 }
+variable "dockerhub_token" {
+  type = string
+}
 
 variable "image_name" {
   type = string
