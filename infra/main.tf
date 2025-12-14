@@ -26,6 +26,8 @@ data "aws_subnets" "default" {
   }
 }
 
+
+
 resource "aws_security_group" "strapi_sg_reshma" {
   name        = "strapi-sg-reshma"
   description = "Allow SSH HTTP Strapi"
@@ -63,6 +65,7 @@ resource "aws_security_group" "rds_sg_reshma" {
   name        = "strapi-rds-sg-reshma"
   description = "Allow Postgres from EC2"
   vpc_id      = data.aws_vpc.default.id
+  
 
   ingress {
     from_port       = 5432
@@ -94,6 +97,7 @@ resource "aws_instance" "strapi" {
   subnet_id                   = data.aws_subnets.default.ids[0]
   vpc_security_group_ids      = [aws_security_group.strapi_sg_reshma.id]
   associate_public_ip_address = true
+
 
   key_name = "strapi-key"
 

@@ -1,12 +1,78 @@
 {
   "version": 4,
   "terraform_version": "1.9.7",
-  "serial": 18,
+  "serial": 14,
   "lineage": "e7cf40ad-9200-e042-6f37-84856efe7751",
   "outputs": {
-    "public_ip": {
-      "value": "13.50.99.228",
-      "type": "string"
+    "ecr_repository_url": {
+      "value": {
+        "arn": "arn:aws:ecr:eu-north-1:301782007642:repository/strapi-app-reshma",
+        "encryption_configuration": [
+          {
+            "encryption_type": "AES256",
+            "kms_key": ""
+          }
+        ],
+        "force_delete": true,
+        "id": "strapi-app-reshma",
+        "image_scanning_configuration": [
+          {
+            "scan_on_push": true
+          }
+        ],
+        "image_tag_mutability": "MUTABLE",
+        "name": "strapi-app-reshma",
+        "registry_id": "301782007642",
+        "repository_url": "301782007642.dkr.ecr.eu-north-1.amazonaws.com/strapi-app-reshma",
+        "tags": null,
+        "tags_all": {},
+        "timeouts": null
+      },
+      "type": [
+        "object",
+        {
+          "arn": "string",
+          "encryption_configuration": [
+            "list",
+            [
+              "object",
+              {
+                "encryption_type": "string",
+                "kms_key": "string"
+              }
+            ]
+          ],
+          "force_delete": "bool",
+          "id": "string",
+          "image_scanning_configuration": [
+            "list",
+            [
+              "object",
+              {
+                "scan_on_push": "bool"
+              }
+            ]
+          ],
+          "image_tag_mutability": "string",
+          "name": "string",
+          "registry_id": "string",
+          "repository_url": "string",
+          "tags": [
+            "map",
+            "string"
+          ],
+          "tags_all": [
+            "map",
+            "string"
+          ],
+          "timeouts": [
+            "object",
+            {
+              "delete": "string"
+            }
+          ]
+        }
+      ]
     }
   },
   "resources": [
@@ -201,7 +267,7 @@
             "deletion_protection": false,
             "domain": "",
             "domain_iam_role_name": "",
-            "enabled_cloudwatch_logs_exports": [],
+            "enabled_cloudwatch_logs_exports": null,
             "endpoint": "strapi-postgres.clu8aaawcfq0.eu-north-1.rds.amazonaws.com:5432",
             "engine": "postgres",
             "engine_version": "17.6",
@@ -243,14 +309,14 @@
             "resource_id": "db-FSEJWBCQ32TAYKNBTKBUDM47RY",
             "restore_to_point_in_time": [],
             "s3_import": [],
-            "security_group_names": [],
+            "security_group_names": null,
             "skip_final_snapshot": true,
             "snapshot_identifier": null,
             "status": "available",
             "storage_encrypted": false,
             "storage_throughput": 0,
             "storage_type": "gp2",
-            "tags": {},
+            "tags": null,
             "tags_all": {},
             "timeouts": {
               "create": "40m",
@@ -304,7 +370,7 @@
             "supported_network_types": [
               "IPV4"
             ],
-            "tags": {},
+            "tags": null,
             "tags_all": {},
             "vpc_id": "vpc-04440c702204c8a92"
           },
@@ -319,144 +385,57 @@
     },
     {
       "mode": "managed",
-      "type": "aws_instance",
-      "name": "strapi",
+      "type": "aws_ecr_repository",
+      "name": "strapi-reshma",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
       "instances": [
         {
-          "schema_version": 1,
+          "schema_version": 0,
           "attributes": {
-            "ami": "ami-0c33fcb753a7176f6",
-            "arn": "arn:aws:ec2:eu-north-1:301782007642:instance/i-0b1168808a6209fd5",
-            "associate_public_ip_address": true,
-            "availability_zone": "eu-north-1c",
-            "capacity_reservation_specification": [
+            "arn": "arn:aws:ecr:eu-north-1:301782007642:repository/strapi-app-reshma",
+            "encryption_configuration": [
               {
-                "capacity_reservation_preference": "open",
-                "capacity_reservation_target": []
+                "encryption_type": "AES256",
+                "kms_key": ""
               }
             ],
-            "cpu_core_count": 1,
-            "cpu_options": [
+            "force_delete": true,
+            "id": "strapi-app-reshma",
+            "image_scanning_configuration": [
               {
-                "amd_sev_snp": "",
-                "core_count": 1,
-                "threads_per_core": 2
+                "scan_on_push": true
               }
             ],
-            "cpu_threads_per_core": 2,
-            "credit_specification": [
-              {
-                "cpu_credits": "unlimited"
-              }
-            ],
-            "disable_api_stop": false,
-            "disable_api_termination": false,
-            "ebs_block_device": [],
-            "ebs_optimized": false,
-            "enclave_options": [
-              {
-                "enabled": false
-              }
-            ],
-            "ephemeral_block_device": [],
-            "get_password_data": false,
-            "hibernation": false,
-            "host_id": "",
-            "host_resource_group_arn": null,
-            "iam_instance_profile": "",
-            "id": "i-0b1168808a6209fd5",
-            "instance_initiated_shutdown_behavior": "stop",
-            "instance_state": "running",
-            "instance_type": "t3.medium",
-            "ipv6_address_count": 0,
-            "ipv6_addresses": [],
-            "key_name": "strapi-key",
-            "launch_template": [],
-            "maintenance_options": [
-              {
-                "auto_recovery": "default"
-              }
-            ],
-            "metadata_options": [
-              {
-                "http_endpoint": "enabled",
-                "http_put_response_hop_limit": 1,
-                "http_tokens": "optional",
-                "instance_metadata_tags": "disabled"
-              }
-            ],
-            "monitoring": false,
-            "network_interface": [],
-            "outpost_arn": "",
-            "password_data": "",
-            "placement_group": "",
-            "placement_partition_number": 0,
-            "primary_network_interface_id": "eni-02d942ff01ee8e8fc",
-            "private_dns": "ip-172-31-5-108.eu-north-1.compute.internal",
-            "private_dns_name_options": [
-              {
-                "enable_resource_name_dns_a_record": false,
-                "enable_resource_name_dns_aaaa_record": false,
-                "hostname_type": "ip-name"
-              }
-            ],
-            "private_ip": "172.31.5.108",
-            "public_dns": "ec2-13-50-99-228.eu-north-1.compute.amazonaws.com",
-            "public_ip": "13.50.99.228",
-            "root_block_device": [
-              {
-                "delete_on_termination": true,
-                "device_name": "/dev/sda1",
-                "encrypted": false,
-                "iops": 100,
-                "kms_key_id": "",
-                "tags": {},
-                "throughput": 0,
-                "volume_id": "vol-00ad94104f92f2dff",
-                "volume_size": 8,
-                "volume_type": "gp2"
-              }
-            ],
-            "secondary_private_ips": [],
-            "security_groups": [
-              "strapi-sg-reshma"
-            ],
-            "source_dest_check": true,
-            "subnet_id": "subnet-02abb94a2ee1d2431",
-            "tags": {
-              "Name": "strapi-ec2-reshma"
-            },
-            "tags_all": {
-              "Name": "strapi-ec2-reshma"
-            },
-            "tenancy": "default",
-            "timeouts": null,
-            "user_data": "f6f3f444a7c1a91fb651d639db325b0e0cf6bd2f",
-            "user_data_base64": null,
-            "user_data_replace_on_change": false,
-            "volume_tags": null,
-            "vpc_security_group_ids": [
-              "sg-085344d342ea71355"
-            ]
+            "image_tag_mutability": "MUTABLE",
+            "name": "strapi-app-reshma",
+            "registry_id": "301782007642",
+            "repository_url": "301782007642.dkr.ecr.eu-north-1.amazonaws.com/strapi-app-reshma",
+            "tags": null,
+            "tags_all": {},
+            "timeouts": null
           },
-          "sensitive_attributes": [
-            [
-              {
-                "type": "get_attr",
-                "value": "user_data"
-              }
-            ]
-          ],
-          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMCwidXBkYXRlIjo2MDAwMDAwMDAwMDB9LCJzY2hlbWFfdmVyc2lvbiI6IjEifQ==",
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxMjAwMDAwMDAwMDAwfX0="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "ecr_read",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "ec2-ecr-pull-role-20251214133111649000000001",
+            "policy_arn": "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+            "role": "ec2-ecr-pull-role"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
           "dependencies": [
-            "aws_db_instance.strapi",
-            "aws_db_subnet_group.strapi",
-            "aws_security_group.rds_sg_reshma",
-            "aws_security_group.strapi_sg_reshma",
-            "data.aws_ami.ubuntu",
-            "data.aws_subnets.default",
-            "data.aws_vpc.default"
+            "aws_iam_role.ec2_ecr_role"
           ]
         }
       ]
@@ -507,7 +486,7 @@
             "name_prefix": "",
             "owner_id": "301782007642",
             "revoke_rules_on_delete": false,
-            "tags": {},
+            "tags": null,
             "tags_all": {},
             "timeouts": null,
             "vpc_id": "vpc-04440c702204c8a92"
@@ -593,7 +572,7 @@
             "name_prefix": "",
             "owner_id": "301782007642",
             "revoke_rules_on_delete": false,
-            "tags": {},
+            "tags": null,
             "tags_all": {},
             "timeouts": null,
             "vpc_id": "vpc-04440c702204c8a92"
