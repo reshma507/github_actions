@@ -1,11 +1,6 @@
-name: CI - Build & Push Strapi
-
-on:
-  push:
-    branches: [ "main" ]
-
 env:
-  IMAGE_NAME: reshma561/strapi-app
+  AWS_REGION: eu-north-1
+  ECR_REPOSITORY: strapi-app
 
 jobs:
   build:
@@ -18,9 +13,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
       - name: Set image tag
         id: tag
         run: |
@@ -28,21 +20,71 @@ jobs:
           TAG=$(date +%Y%m%d%H%M%S)-$SHORT_SHA
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
-            ${{ env.IMAGE_NAME }}:latest
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Show Image Tag
-        run: echo "IMAGE TAG = ${{ steps.tag.outputs.tag }}"
+      - name: Build and push image to ECR
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          ECR_URI=$ACCOUNT_ID.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}
+
+          docker build -t $ECR_URI:${{ steps.tag.outputs.tag }} .
+          docker tag $ECR_URI:${{ steps.tag.outputs.tag }} $ECR_URI:latest
+
+          docker push $ECR_URI:${{ steps.tag.outputs.tag }}
+          docker push $ECR_URI:latest
+# name: CI - Build & Push Strapi
+
+# on:
+#   push:
+#     branches: [ "main" ]
+
+# env:
+#   IMAGE_NAME: reshma561/strapi-app
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     outputs:
+#       image_tag: ${{ steps.tag.outputs.tag }}
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v2
+
+#       - name: Set image tag
+#         id: tag
+#         run: |
+#           SHORT_SHA=${GITHUB_SHA::7}
+#           TAG=$(date +%Y%m%d%H%M%S)-$SHORT_SHA
+#           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+#       - name: Login to Docker Hub
+#         uses: docker/login-action@v2
+#         with:
+#           username: ${{ secrets.DOCKERHUB_USERNAME }}
+#           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+#       - name: Build and push
+#         uses: docker/build-push-action@v4
+#         with:
+#           context: .
+#           file: ./Dockerfile
+#           push: true
+#           tags: |
+#             ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+#             ${{ env.IMAGE_NAME }}:latest
+
+#       - name: Show Image Tag
+#         run: echo "IMAGE TAG = ${{ steps.tag.outputs.tag }}"

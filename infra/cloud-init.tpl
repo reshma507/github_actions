@@ -22,9 +22,14 @@ docker run -d --name strapi \
   -e TRANSFER_TOKEN_SALT="${transfer_token_salt}" \
   -e ENCRYPTION_KEY="${encryption_key}" \
   -e APP_KEYS="${app_keys}" \
-  -e ADMIN_AUTH_SECRET="${admin_auth_secret}" \
-  -e DATABASE_CLIENT=sqlite \
-  -e DATABASE_FILENAME=.tmp/data.db \
+  -e DATABASE_CLIENT=postgres \
+  -e DATABASE_HOST="${db_host}" \
+  -e DATABASE_PORT=5432 \
+  -e DATABASE_NAME=strapi \
+  -e DATABASE_USERNAME=strapi \
+  -e DATABASE_PASSWORD="${db_password}" \
+  -e DATABASE_SSL=false \
   ${image}
+
 
 

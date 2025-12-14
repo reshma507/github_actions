@@ -59,7 +59,25 @@ resource "aws_security_group" "strapi_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+resource "aws_security_group" "rds_sg-reshma" {
+  name        = "strapi-rds-sg-reshma"
+  description = "Allow Postgres from EC2"
+  vpc_id      = data.aws_vpc.default.id
 
+  ingress {
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.strapi_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 data "aws_ami" "ubuntu" {
   owners      = ["099720109477"]
   most_recent = true
@@ -80,15 +98,18 @@ resource "aws_instance" "strapi" {
   key_name = "strapi-key"
 
   user_data = templatefile("${path.module}/cloud-init.tpl", {
-  image                = var.image
-  admin_jwt_secret     = var.admin_jwt_secret
-  api_token_salt       = var.api_token_salt
-  transfer_token_salt  = var.transfer_token_salt
-  encryption_key       = var.encryption_key
-  app_keys             = var.app_keys
-  admin_auth_secret    = var.admin_auth_secret
+  image               = var.image
+  admin_jwt_secret    = var.admin_jwt_secret
+  api_token_salt      = var.api_token_salt
+  transfer_token_salt = var.transfer_token_salt
+  encryption_key      = var.encryption_key
+  app_keys            = var.app_keys
+  admin_auth_secret   = var.admin_auth_secret
 
-  })
+  db_host     = aws_db_instance.strapi.address
+  db_password = var.db_password
+})
+
 
   tags = {
     Name = "strapi-ec2-reshma"
