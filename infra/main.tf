@@ -59,7 +59,7 @@ resource "aws_security_group" "strapi_sg_reshma" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-resource "aws_security_group" "rds_sg-reshma" {
+resource "aws_security_group" "rds_sg_reshma" {
   name        = "strapi-rds-sg-reshma"
   description = "Allow Postgres from EC2"
   vpc_id      = data.aws_vpc.default.id
@@ -68,7 +68,7 @@ resource "aws_security_group" "rds_sg-reshma" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.strapi_sg.id]
+    security_groups = [aws_security_group.strapi_sg_reshma]
   }
 
   egress {
