@@ -129,6 +129,7 @@ resource "aws_instance" "strapi_reshma" {
     -e TRANSFER_TOKEN_SALT="kDiBX+hOa+bhAKPpSFR37A==" \
     -e ENCRYPTION_KEY="8sPv6kraSJAPrV50wj2jpA==" \
     -e ADMIN_AUTH_SECRET="H3F9oWqv7J2u1PcQ5tUyZg==" \
+    -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
     -e DATABASE_CLIENT=postgres \
     -e DATABASE_HOST=${aws_db_instance.postgres.address} \
     -e DATABASE_PORT=5432 \
