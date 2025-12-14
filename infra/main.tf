@@ -26,8 +26,8 @@ data "aws_subnets" "default" {
   }
 }
 
-resource "aws_security_group" "strapi_sg" {
-  name        = "strapi-sg"
+resource "aws_security_group" "strapi_sg_reshma" {
+  name        = "strapi-sg-reshma"
   description = "Allow SSH HTTP Strapi"
   vpc_id      = data.aws_vpc.default.id
 

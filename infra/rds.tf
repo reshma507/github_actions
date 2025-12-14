@@ -1,5 +1,5 @@
 resource "aws_db_subnet_group" "strapi" {
-  name       = "strapi-db-subnet"
+  name       = "strapi-db-subnet-reshma"
   subnet_ids = data.aws_subnets.default.ids
 }
 
