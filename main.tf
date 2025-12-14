@@ -101,37 +101,45 @@ resource "aws_instance" "strapi_reshma" {
   associate_public_ip_address = true
 
   user_data = <<-EOF
-    #!/bin/bash
-    set -e
+  #!/bin/bash
+  set -e
 
-    apt-get update -y
-    apt-get install -y docker.io
-    systemctl enable --now docker
-    sleep 10
+  apt-get update -y
+  apt-get install -y docker.io
+  systemctl enable --now docker
+  sleep 10
 
-    docker rm -f strapi || true
+  # Docker Hub login (PRIVATE repo fix)
+  echo "${var.dockerhub_token}" | docker login \
+    -u "${var.dockerhub_username}" \
+    --password-stdin
 
-    docker run -d --restart unless-stopped \
-      --name strapi \
-      -p 1337:1337 \
-      -e HOST=0.0.0.0 \
-      -e PORT=1337 \
-      -e APP_KEYS=SrGRSHbSbHV/OUmId7doZg==,cL+QLmuRM9a9qlEl/adnyQ==,kp6YXYbOkeIqmu0YyevJTg==,XShDrs9TJTconCAJjL4SBw==
-      -e API_TOKEN_SALT=DyBgHklIZdboUlQAZZ/42g==
-      -e ADMIN_JWT_SECRET=BAtS+/RTXz97ztKthDHJ2g==
-      -e TRANSFER_TOKEN_SALT=kDiBX+hOa+bhAKPpSFR37A==
-      -e ENCRYPTION_KEY=8sPv6kraSJAPrV50wj2jpA==
-      -e ADMIN_AUTH_SECRET=H3F9oWqv7J2u1PcQ5tUyZg==
-      -e DATABASE_CLIENT=postgres \
-      -e DATABASE_HOST=${aws_db_instance.postgres.address} \
-      -e DATABASE_PORT=5432 \
-      -e DATABASE_NAME=${var.db_name} \
-      -e DATABASE_USERNAME=${var.db_username} \
-      -e DATABASE_PASSWORD=${var.db_password} \
-      -e DATABASE_SSL=true \
-      -e DATABASE_SSL_REJECT_UNAUTHORIZED=false \
-      ${var.dockerhub_username}/${var.image_name}:${var.image_tag}
-  EOF
+  # Remove old container if exists
+  docker rm -f strapi || true
+
+  # Run Strapi
+  docker run -d --restart unless-stopped \
+    --name strapi \
+    -p 1337:1337 \
+    -e HOST=0.0.0.0 \
+    -e PORT=1337 \
+    -e APP_KEYS="SrGRSHbSbHV/OUmId7doZg==,cL+QLmuRM9a9qlEl/adnyQ==,kp6YXYbOkeIqmu0YyevJTg==,XShDrs9TJTconCAJjL4SBw==" \
+    -e API_TOKEN_SALT="DyBgHklIZdboUlQAZZ/42g==" \
+    -e ADMIN_JWT_SECRET="BAtS+/RTXz97ztKthDHJ2g==" \
+    -e TRANSFER_TOKEN_SALT="kDiBX+hOa+bhAKPpSFR37A==" \
+    -e ENCRYPTION_KEY="8sPv6kraSJAPrV50wj2jpA==" \
+    -e ADMIN_AUTH_SECRET="H3F9oWqv7J2u1PcQ5tUyZg==" \
+    -e DATABASE_CLIENT=postgres \
+    -e DATABASE_HOST=${aws_db_instance.postgres.address} \
+    -e DATABASE_PORT=5432 \
+    -e DATABASE_NAME=${var.db_name} \
+    -e DATABASE_USERNAME=${var.db_username} \
+    -e DATABASE_PASSWORD=${var.db_password} \
+    -e DATABASE_SSL=true \
+    -e DATABASE_SSL_REJECT_UNAUTHORIZED=false \
+    ${var.dockerhub_username}/${var.image_name}:${var.image_tag}
+EOF
+
 
   depends_on = [aws_db_instance.postgres]
 }
