@@ -99,16 +99,19 @@ resource "aws_instance" "strapi" {
 
   user_data = templatefile("${path.module}/cloud-init.tpl", {
   image               = var.image
+  aws_region          = var.aws_region
+  ecr_registry        = var.ecr_registry
+
   admin_jwt_secret    = var.admin_jwt_secret
   api_token_salt      = var.api_token_salt
   transfer_token_salt = var.transfer_token_salt
   encryption_key      = var.encryption_key
   app_keys            = var.app_keys
-  admin_auth_secret   = var.admin_auth_secret
 
-  db_host     = aws_db_instance.strapi.address
-  db_password = var.db_password
+  db_host             = aws_db_instance.strapi.address
+  db_password         = var.db_password
 })
+
 
 
   tags = {
