@@ -49,8 +49,9 @@ jobs:
 
     - name: Set Terraform variables
       run: |
-        echo "TF_VAR_image=${{ github.event.inputs.image_repo }}:${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
-        echo "TF_VAR_aws_region=${{ github.event.inputs.aws_region }}" >> $GITHUB_ENV
+       echo "TF_VAR_image=${{ github.event.inputs.image_repo }}:${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
+       echo "TF_VAR_aws_region=${{ github.event.inputs.aws_region }}" >> $GITHUB_ENV
+       echo "TF_VAR_ecr_registry=${{ secrets.ECR_REGISTRY }}" >> $GITHUB_ENV
 
     - name: Terraform Init
       working-directory: infra

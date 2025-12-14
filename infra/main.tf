@@ -110,6 +110,7 @@ resource "aws_instance" "strapi" {
 
   db_host             = aws_db_instance.strapi.address
   db_password         = var.db_password
+
 })
 
 
