@@ -68,7 +68,7 @@ resource "aws_security_group" "rds_sg_reshma" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.strapi_sg_reshma]
+    security_groups = [aws_security_group.strapi_sg_reshma.id]
   }
 
   egress {
@@ -92,7 +92,7 @@ resource "aws_instance" "strapi" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t3.medium"
   subnet_id                   = data.aws_subnets.default.ids[0]
-  vpc_security_group_ids      = [aws_security_group.strapi_sg_reshma]
+  vpc_security_group_ids      = [aws_security_group.strapi_sg_reshma.id]
   associate_public_ip_address = true
 
   key_name = "strapi-key"

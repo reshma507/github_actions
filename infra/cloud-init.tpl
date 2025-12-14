@@ -18,6 +18,7 @@ docker run -d --name strapi \
   --restart unless-stopped \
   -e NODE_ENV=production \
   -e ADMIN_JWT_SECRET="${admin_jwt_secret}" \
+  -e ADMIN_AUTH_SECRET="${admin_auth_secret}" \
   -e API_TOKEN_SALT="${api_token_salt}" \
   -e TRANSFER_TOKEN_SALT="${transfer_token_salt}" \
   -e ENCRYPTION_KEY="${encryption_key}" \
@@ -28,8 +29,9 @@ docker run -d --name strapi \
   -e DATABASE_NAME=strapi \
   -e DATABASE_USERNAME=strapi \
   -e DATABASE_PASSWORD="${db_password}" \
-  -e DATABASE_SSL=false \
+  -e DATABASE_SSL=true \
   ${image}
+
 
 
 
