@@ -1,5 +1,5 @@
-resource "aws_ecr_repository" "strapi" {
-  name = "strapi-app"
+resource "aws_ecr_repository" "strapi-reshma" {
+  name = "strapi-app-reshma"
 
   image_scanning_configuration {
     scan_on_push = true

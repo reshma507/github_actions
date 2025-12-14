@@ -6,7 +6,7 @@ resource "aws_db_subnet_group" "strapi" {
 resource "aws_db_instance" "strapi" {
   identifier             = "strapi-postgres"
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "15.6"
   instance_class         = "db.t3.micro"
   allocated_storage      = 20
   db_name                = "strapi"
