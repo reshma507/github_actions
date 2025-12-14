@@ -107,6 +107,7 @@ resource "aws_instance" "strapi" {
   transfer_token_salt = var.transfer_token_salt
   encryption_key      = var.encryption_key
   app_keys            = var.app_keys
+  admin_auth_secret   = var.admin_auth_secret
 
   db_host             = aws_db_instance.strapi.address
   db_password         = var.db_password
